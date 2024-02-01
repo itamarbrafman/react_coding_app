@@ -60,13 +60,9 @@ const CheckWhichCase = (caseType) => {
 
 io.on('connection', (socket) => {
   
-  console.log('socket.id:', socket.id);
-  console.log('flagsData:', flagsData);
   const url = socket.handshake.query.url;
-  console.log('Connected client from URL:', url);
   const caseType = url.replace(clientPort + '/', '');
   const currentCase = CheckWhichCase(caseType);
-  console.log('currentCase:', currentCase);
   
   if (url !== clientPort + '/') {
     if (!currentCase.flag) {
@@ -74,11 +70,9 @@ io.on('connection', (socket) => {
       currentCase.mentorId = socket.id;
       // mentorSocket = socket;
       // flagsData = true;
-      console.log('flag changed!!!!!');   
     }
     else{ 
       socket.emit('I am a student');
-      console.log('I am a student emited!!!!!');   
 
     }
   }  
@@ -98,7 +92,6 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   });
   
 app.get("/api/checkFlagsState", (req, res) => {
-    console.log("app.get(/api)");
     res.json({flagsData});
 });
 
@@ -108,7 +101,6 @@ app.post('/save-code-input', (req, res) => {
   const currentCase = CheckWhichCase(title);
   const caseType = currentCase.caseType;
   const caseId = codeBlockService[`${caseType}Id`];
-  console.log('caseId:', caseId);
  
   codeBlockService.saveEditedCode(caseId, req, res);
 });
@@ -122,9 +114,7 @@ codeBlockChangeStream.on('change', async (change) => {
       
       const codeFieldValue = result.code;
       const titleField = result.title;
-      console.log('Change occurred in CodeBlock:', codeFieldValue);
       const currentCase = CheckWhichCase(titleField);
-      console.log('currentCase!!!!!!!!!!!!:', currentCase);
 
       io.to(currentCase.mentorId).emit('codeBlockChange', { code: codeFieldValue, title: titleField });
 

@@ -27,7 +27,6 @@ const CodeEditor = ({ title, type }) => {
 
   useEffect(() => {
     socket.on("codeBlockChange", ({ code, title }) => {
-      console.log('Code block change received:', code, title);
       setCodeInput(code);
     });
     
@@ -38,7 +37,6 @@ const CodeEditor = ({ title, type }) => {
   }, []);  
   
   useEffect(() => {
-    console.log("codeInput:", codeInput);
   
     fetch("/save-code-input", {
       method: "POST",
@@ -60,7 +58,6 @@ const CodeEditor = ({ title, type }) => {
   useEffect(() => {
   
     socket.on('I am a student', () => {
-      console.log('verified I am a student');
       setCaseFlag(true);
     });  
     
