@@ -74,7 +74,7 @@ const CodeEditor = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ code: codeInput, title: type }),
+      body: JSON.stringify({ code: codeInput, title: title }),
     })
     .then((res) => res.json())
     .then((data) => {
