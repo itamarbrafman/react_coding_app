@@ -3,9 +3,9 @@
     "concurrently": "^8.2.2"
   },
   "scripts": {
-    "start": "concurrently \"npm start server\" \"npm start client\"",
+    "start": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd server && npm start",
     "client": "cd client && npm start",
-    "build": "npm start"
+    "build": "cd server && npm install && npm run build && cd ../client && npm install && npm run build"
   }
 }
