@@ -4,6 +4,9 @@ import Title from "./partials/title";
 import Nav from "./partials/nav";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import io from "socket.io-client";
+import {AsyncCaseText, ES6FeaturesText, eventHandlingText, promiseHandlingText} from "./initialTexts.js";
+import hljs from 'highlight.js';
+import 'highlight.js/styles/monokai.css';
 
 const socket = io('http://localhost:5000', {
   query: {
@@ -21,9 +24,10 @@ const Home = () => {
   );
 };
 
-const CodeEditor = ({ title, type }) => {
-  const [codeInput, setCodeInput] = useState('testing testing');
+const CodeEditor = ({ title, type, initialCode}) => {
+  const [codeInput, setCodeInput] = useState(initialCode);
   const [caseFlag, setCaseFlag] = useState(false);
+  const [highlightedCode, setHighlightedCode] = useState('');
 
   useEffect(() => {
     socket.on("codeBlockChange", ({ code, title }) => {
@@ -66,14 +70,21 @@ const CodeEditor = ({ title, type }) => {
     };
   }, []); 
 
-  
+  useEffect(() => {
+    const highlighted = hljs.highlightAuto(codeInput).value;
+
+    setHighlightedCode(highlighted);
+  }, [codeInput]);
+
   return (
     <div>
       <Nav />
       <h2>{title}</h2>
       <div id="smileyFace">😊</div> {/*for solution, haven't implemented yet*/}
       {!caseFlag && (
-        <div>{codeInput}</div>
+        <pre>
+          <code className="styled-code" dangerouslySetInnerHTML={{ __html: highlightedCode }} />
+        </pre>
       )}
       {caseFlag && (
         <textarea
@@ -97,19 +108,19 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route
           path="/asyncCase"
-          element={<CodeEditor title="Async Case" type="asyncCase" />}
+          element={<CodeEditor title="Async Case" type="asyncCase" initialCode={AsyncCaseText} />}
         />
         <Route
           path="/promiseHandling"
-          element={<CodeEditor title="Promise Handling" type="promiseHandling" />}
+          element={<CodeEditor title="Promise Handling" type="promiseHandling" initialCode={promiseHandlingText} />}
         />
         <Route
           path="/eventHandling"
-          element={<CodeEditor title="Event Handling" type="eventHandling" />}
+          element={<CodeEditor title="Event Handling" type="eventHandling" initialCode={eventHandlingText} />}
         />        
         <Route
         path="/ES6Features"
-        element={<CodeEditor title="ES6 Features" type="ES6Features" />}
+        element={<CodeEditor title="ES6 Features" type="ES6Features" initialCode={ES6FeaturesText} />}
         />
       </Routes>
     </div>
