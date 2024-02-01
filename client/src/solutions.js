@@ -1,4 +1,4 @@
-const asyncCaseText = `
+const asyncCaseSolution = `
   // Simulating an asynchronous function that fetches data from an API
   async function fetchDataFromAPI() {
     try {
@@ -26,9 +26,11 @@ const asyncCaseText = `
 
   // Calling the asynchronous function
   fetchDataFromAPI();
+
+  Done editing this code!
 `;
 
-const ES6FeaturesText = `
+const ES6FeaturesSolution = `
   // Arrow functions
   const add = (a, b) => a + b;
 
@@ -46,9 +48,11 @@ const ES6FeaturesText = `
     return a + b + additionalSum;
   };
   console.log('Sum:', sum(...numbers));
+
+  Done editing this code!
 `;
 
-const eventHandlingText = `
+const eventHandlingSolution = `
   // Simulating an event listener
   document.addEventListener('click', (event) => {
     console.log('Click event:', event);
@@ -59,9 +63,11 @@ const eventHandlingText = `
   // Simulating a custom event and dispatching it
   const customEvent = new CustomEvent('customEvent', { detail: 'Custom event data' });
   document.dispatchEvent(customEvent);
+
+  Done editing this code!
 `;
 
-const promiseHandlingText = `
+const promiseHandlingSolution = `
   // Simulating a function that returns a promise
   function simulatePromiseHandling() {
     return new Promise((resolve, reject) => {
@@ -86,11 +92,13 @@ const promiseHandlingText = `
     .catch((error) => {
       console.error('Promise error:', error.message);
     });
+
+    Done editing this code!
 `;
 
 export {
-  asyncCaseText,
-  ES6FeaturesText,
-  eventHandlingText,
-  promiseHandlingText,
+  asyncCaseSolution,
+  ES6FeaturesSolution,
+  eventHandlingSolution,
+  promiseHandlingSolution,
 };

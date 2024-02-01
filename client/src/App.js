@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import Footer from "./partials/footer";
 import Title from "./partials/title";
 import Nav from "./partials/nav";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { useParams } from 'react-router-dom'
 import io from "socket.io-client";
-import {AsyncCaseText, ES6FeaturesText, eventHandlingText, promiseHandlingText} from "./initialTexts.js";
+import {asyncCaseText, ES6FeaturesText, eventHandlingText, promiseHandlingText} from "./initialTexts.js";
+import {asyncCaseSolution, ES6FeaturesSolution, eventHandlingSolution, promiseHandlingSolution} from "./solutions.js";
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
 
@@ -13,6 +15,27 @@ const socket = io('http://localhost:5000', {
     url: window.location.href,
   },
 });
+
+const typeToTitleMap = {
+  asyncCase: "Async Case",
+  promiseHandling: "Promise Handling",
+  eventHandling: "Event Handling",
+  ES6Features: "ES6 Features",
+};
+
+const typeToTextMap = {
+  asyncCase: asyncCaseText,
+  promiseHandling: promiseHandlingText,
+  eventHandling: eventHandlingText,
+  ES6Features: ES6FeaturesText,
+};
+
+const typeToSolutionMap = {
+  asyncCase: asyncCaseSolution,
+  promiseHandling: promiseHandlingSolution,
+  eventHandling: eventHandlingSolution,
+  ES6Features: ES6FeaturesSolution,
+};
 
 const Home = () => {
   return (
@@ -24,20 +47,24 @@ const Home = () => {
   );
 };
 
-const CodeEditor = ({ title, type, initialCode}) => {
+const CodeEditor = () => {
+  const { currType } = useParams();
+  
+  const title = typeToTitleMap[currType];
+  const type = currType;
+  const initialCode = typeToTextMap[currType];
+  const solution = typeToSolutionMap[currType];
+
   const [codeInput, setCodeInput] = useState(initialCode);
   const [caseFlag, setCaseFlag] = useState(false);
   const [highlightedCode, setHighlightedCode] = useState('');
+  
 
   useEffect(() => {
     socket.on("codeBlockChange", ({ code, title }) => {
       setCodeInput(code);
     });
     
-    
-    return () => {
-      socket.disconnect();
-    };
   }, []);  
   
   useEffect(() => {
@@ -51,7 +78,7 @@ const CodeEditor = ({ title, type, initialCode}) => {
     })
     .then((res) => res.json())
     .then((data) => {
-      console.log("Server----response:");
+      console.log("Server response:");
     })
     .catch((error) => {
       console.error("Error sending code input to server:", error);
@@ -61,14 +88,11 @@ const CodeEditor = ({ title, type, initialCode}) => {
 
   useEffect(() => {
   
-    socket.on('I am a student', () => {
+    socket.on('STUDENT_EVENT', () => {
       setCaseFlag(true);
     });  
     
-    return () => {
-      socket.disconnect();
-    };
-  }, []); 
+  }, []);  
 
   useEffect(() => {
     const highlighted = hljs.highlightAuto(codeInput).value;
@@ -80,7 +104,7 @@ const CodeEditor = ({ title, type, initialCode}) => {
     <div>
       <Nav />
       <h2>{title}</h2>
-      <div id="smileyFace">😊</div> {/*for solution, haven't implemented yet*/}
+      <div id="smileyFace" style={{ display: solution === initialCode ? 'block' : 'none' }}>😊</div>
       {!caseFlag && (
         <pre>
           <code className="styled-code" dangerouslySetInnerHTML={{ __html: highlightedCode }} />
@@ -100,32 +124,20 @@ const CodeEditor = ({ title, type, initialCode}) => {
   );
 };
 
-function App() {
+const App = () => {
 
   return (
     <div>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route
-          path="/asyncCase"
-          element={<CodeEditor title="Async Case" type="asyncCase" initialCode={AsyncCaseText} />}
-        />
-        <Route
-          path="/promiseHandling"
-          element={<CodeEditor title="Promise Handling" type="promiseHandling" initialCode={promiseHandlingText} />}
-        />
-        <Route
-          path="/eventHandling"
-          element={<CodeEditor title="Event Handling" type="eventHandling" initialCode={eventHandlingText} />}
-        />        
-        <Route
-        path="/ES6Features"
-        element={<CodeEditor title="ES6 Features" type="ES6Features" initialCode={ES6FeaturesText} />}
-        />
-      </Routes>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route
+            path= {"/:currType"}
+            element={<CodeEditor />}
+          />
+        </Routes>
     </div>
   );
-}
+};
 
 export default App;
 

@@ -63,10 +63,8 @@ io.on('connection', (socket) => {
   const url = socket.handshake.query.url;
   const caseType = url.replace(clientPort + '/', '');
   const currentCase = CheckWhichCase(caseType);
-  console.log("currentCase", currentCase);
 
   if (url !== clientPort + '/') {
-    console.log("currentCase.flag", currentCase.flag);
   
     if (!currentCase.flag) {
       currentCase.flag = true;
@@ -75,7 +73,7 @@ io.on('connection', (socket) => {
       // flagsData = true;
     }
     else{ 
-      socket.emit('I am a student');
+      socket.emit('STUDENT_EVENT');
 
     }
   }  
