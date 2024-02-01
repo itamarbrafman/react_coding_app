@@ -69,8 +69,6 @@ io.on('connection', (socket) => {
     if (!currentCase.flag) {
       currentCase.flag = true;
       currentCase.mentorId = socket.id;
-      // mentorSocket = socket;
-      // flagsData = true;
     }
     else{ 
       socket.emit('STUDENT_EVENT');

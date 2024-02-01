@@ -74,11 +74,11 @@ const CodeEditor = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ code: codeInput, title: title }),
+      body: JSON.stringify({ code: codeInput, title: type }),
     })
     .then((res) => res.json())
     .then((data) => {
-      console.log("Server response:");
+      console.log("Server----response:");
     })
     .catch((error) => {
       console.error("Error sending code input to server:", error);
