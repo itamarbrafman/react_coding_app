@@ -96,15 +96,23 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   });
 
 
-app.post('/save-code-input', (req, res) => {
-  const { code, title } = req.body; 
-
-  const currentCase = CheckWhichCase(title);
-  const caseType = currentCase.caseType;
-  const caseId = codeBlockService[`${caseType}Id`];
- 
-  codeBlockService.saveEditedCode(caseId, req, res);
-});
+  app.post('/save-code-input', (req, res) => {
+    try {
+      const { code, title } = req.body; 
+  
+      const currentCase = CheckWhichCase(title);
+      const caseType = currentCase.caseType;
+      const caseId = codeBlockService[`${caseType}Id`];
+    
+      codeBlockService.saveEditedCode(caseId, req, res);
+  
+      res.status(200).json({ success: true, message: 'Code saved successfully.' });
+    } catch (error) {
+      console.error('Error saving code:', error);
+      res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+  });
+  
 
 codeBlockChangeStream.on('change', async (change) => {
     try {
