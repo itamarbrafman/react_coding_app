@@ -129,9 +129,9 @@ const App = () => {
   return (
     <div>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="http://localhost:3000/" element={<Home />} />
           <Route
-            path= {"/:currType"}
+            path= {"http://localhost:3000/:currType"}
             element={<CodeEditor />}
           />
         </Routes>
