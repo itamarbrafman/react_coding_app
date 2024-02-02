@@ -10,7 +10,7 @@ const codeBlockService = require('./codeBlockService');
 const { Socket } = require('socket.io');
 // var cors = require('cors');
 
-const clientPort = 'http://localhost:3000';
+const clientPort = 'https://frontend-coding.onrender.com';
 
 const app = express();
 const httpServer = http.createServer(app);
