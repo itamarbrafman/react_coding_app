@@ -19,11 +19,11 @@ const io = require('socket.io')(httpServer, {
   }
 });
 
-let mentorSocket = Socket;
 app.use(bodyParser.json());
 
-let studentId;
-let flagsData = false;
+const codeBlockChangeStream = codeBlockService.CodeBlock.watch();
+
+const dbURI = "mongodb+srv://itamarbrafman:8ooqF0HXTDpCdJsv@cluster0.xudn2yd.mongodb.net/?retryWrites=true&w=majority";
 
 const caseObject = {
   asyncCase: {
@@ -77,9 +77,6 @@ io.on('connection', (socket) => {
   }  
 });
 
-const codeBlockChangeStream = codeBlockService.CodeBlock.watch();
-
-const dbURI = "mongodb+srv://itamarbrafman:8ooqF0HXTDpCdJsv@cluster0.xudn2yd.mongodb.net/?retryWrites=true&w=majority";
 
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((result) => {
@@ -89,10 +86,7 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .catch(err => {
     console.error('Error connecting to the database:', err);
   });
-  
-app.get("/api/checkFlagsState", (req, res) => {
-    res.json({flagsData});
-});
+
 
 app.post('/save-code-input', (req, res) => {
   const { code, title } = req.body; 
