@@ -10,7 +10,7 @@ import {asyncCaseSolution, ES6FeaturesSolution, eventHandlingSolution, promiseHa
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
 
-const socket = io('https://backend-6nlo.onrender.com:5000', {
+const socket = io('https://backend-6nlo.onrender.com', {
   query: {
     url: window.location.href,
   },
