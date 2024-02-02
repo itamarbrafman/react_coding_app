@@ -8,8 +8,9 @@ const fs = require('fs');
 const socketIO = require('socket.io');
 const codeBlockService = require('./codeBlockService');
 const { Socket } = require('socket.io');
+// var cors = require('cors');
 
-const clientPort = 'http://localhost:3000';
+const clientPort = 'https://frontend-coding.onrender.com';
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -19,12 +20,14 @@ const io = require('socket.io')(httpServer, {
   }
 });
 
+// app.use(cors())
 app.use(bodyParser.json());
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  next();
-  });
+// app.use(function(req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Headers", "X-Requested-With");
+//   next();
+//   });
+
 
 const codeBlockChangeStream = codeBlockService.CodeBlock.watch();
 
