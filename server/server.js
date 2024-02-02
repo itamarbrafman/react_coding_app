@@ -9,7 +9,7 @@ const socketIO = require('socket.io');
 const codeBlockService = require('./codeBlockService');
 const { Socket } = require('socket.io');
 
-const clientPort = 'https://frontend-tbk9.onrender.com';
+const clientPort = 'http://localhost:3000';
 
 const app = express();
 const httpServer = http.createServer(app);
