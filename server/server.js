@@ -67,7 +67,7 @@ const CheckWhichCase = (caseType) => {
 };
 
 io.on('connection', (socket) => {
-  
+  console.log('a user connected!!!!!!!!!!!!!!1');
   const url = socket.handshake.query.url;
   const caseType = url.replace(clientPort + '/', '');
   const currentCase = CheckWhichCase(caseType);

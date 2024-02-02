@@ -28,7 +28,6 @@ const saveEditedCode = async (_id, { body }, res) => {
       { upsert: true, new: true }
     );
 
-    res.json({ message: 'Code saved successfully' });
   } catch (error) {
     console.error('Error saving code:', error);
     res.status(500).json({ error: 'Internal Server Error' });
