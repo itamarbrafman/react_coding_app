@@ -10,7 +10,7 @@ const codeBlockService = require('./codeBlockService');
 const { Socket } = require('socket.io');
 // var cors = require('cors');
 
-const clientPort = 'https://frontend-coding.onrender.com';
+const clientPort = 'http://localhost:3000';
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -82,7 +82,26 @@ io.on('connection', (socket) => {
       socket.emit('STUDENT_EVENT');
 
     }
-  }  
+  } 
+  socket.on('saveCodeInput', ({ code, title }) => {
+    try {
+      const currentCase = CheckWhichCase(title);
+      const caseType = currentCase.caseType;
+      const caseId = codeBlockService[`${caseType}Id`];
+
+      // Call the saveEditedCode function with the received data
+      codeBlockService.saveEditedCode(caseId, { body: { code, title, caseType } }, socket);
+
+      // Optional: Emit a response back to the client if needed
+      socket.emit('saveCodeInputResponse', { success: true, message: 'Code saved successfully.' });
+    } catch (error) {
+      console.error('Error saving code:', error);
+      
+      // Optional: Emit an error response back to the client if needed
+      socket.emit('saveCodeInputResponse', { success: false, error: 'Internal Server Error' });
+    }
+  });  
+  
 });
 
 
@@ -95,23 +114,6 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
     console.error('Error connecting to the database:', err);
   });
 
-
-  app.post('/save-code-input', (req, res) => {
-    try {
-      const { code, title } = req.body; 
-  
-      const currentCase = CheckWhichCase(title);
-      const caseType = currentCase.caseType;
-      const caseId = codeBlockService[`${caseType}Id`];
-    
-      codeBlockService.saveEditedCode(caseId, req, res);
-  
-      res.status(200).json({ success: true, message: 'Code saved successfully.' });
-    } catch (error) {
-      console.error('Error saving code:', error);
-      res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
-  });
   
 
 codeBlockChangeStream.on('change', async (change) => {

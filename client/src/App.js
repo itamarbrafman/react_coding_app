@@ -10,7 +10,7 @@ import {asyncCaseSolution, ES6FeaturesSolution, eventHandlingSolution, promiseHa
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
 
-const socket = io('https://backend-6nlo.onrender.com', {
+const socket = io('http://localhost:5000', {
   query: {
     url: window.location.href,
   },
@@ -66,24 +66,7 @@ const CodeEditor = () => {
     });
     
   }, []);  
-  
-  useEffect(() => {
-  
-    fetch("/save-code-input", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ code: codeInput, title: type }),
-    })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log("Server----response:");
-    })
-    .catch((error) => {
-      console.error("Error sending code input to server:", error);
-    });
-  }, [codeInput]);
+
   
 
   useEffect(() => {
@@ -93,6 +76,16 @@ const CodeEditor = () => {
     });  
     
   }, []);  
+
+  useEffect(() => {
+    // Emit saveCodeInput event to the server
+    socket.emit('saveCodeInput', { code: codeInput, title: type });
+
+    // Optional: Handle the server's response if needed
+    socket.on('saveCodeInputResponse', (data) => {
+      console.log('Server response:', data);
+    });
+  }, [codeInput, type]);
 
   useEffect(() => {
     const highlighted = hljs.highlightAuto(codeInput).value;
