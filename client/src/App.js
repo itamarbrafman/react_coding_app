@@ -10,7 +10,7 @@ import {asyncCaseSolution, ES6FeaturesSolution, eventHandlingSolution, promiseHa
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
 
-const socket = io('https://backend-coding-app.onrender.com', {
+const socket = io('http://localhost:5000', {
   query: {
     url: window.location.href,
   },
@@ -129,9 +129,9 @@ const App = () => {
   return (
     <div>
         <Routes>
-          <Route path="http://localhost:3000/" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route
-            path= {"http://localhost:3000/:currType"}
+            path= {"/:currType"}
             element={<CodeEditor />}
           />
         </Routes>
