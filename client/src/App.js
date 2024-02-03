@@ -1,73 +1,33 @@
 import React, { useEffect, useState } from "react";
-import Footer from "./partials/footer";
-import Title from "./partials/title";
-import Nav from "./partials/nav";
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { useParams } from 'react-router-dom'
-import io from "socket.io-client";
-import {asyncCaseText, ES6FeaturesText, eventHandlingText, promiseHandlingText} from "./initialTexts.js";
-import {asyncCaseSolution, ES6FeaturesSolution, eventHandlingSolution, promiseHandlingSolution} from "./solutions.js";
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
+import Home from "./components/home";
+import Footer from "./components/partials/footer";
+import Nav from "./components/partials/nav";
+import socket from "./socket.js";
+import typeToInfoMap from "./codeBlockService/typeToInfoMap";
 
-const socket = io('https://backend-6nlo.onrender.com', {
-  query: {
-    url: window.location.href,
-  },
-});
-
-const typeToTitleMap = {
-  asyncCase: "Async Case",
-  promiseHandling: "Promise Handling",
-  eventHandling: "Event Handling",
-  ES6Features: "ES6 Features",
-};
-
-const typeToTextMap = {
-  asyncCase: asyncCaseText,
-  promiseHandling: promiseHandlingText,
-  eventHandling: eventHandlingText,
-  ES6Features: ES6FeaturesText,
-};
-
-const typeToSolutionMap = {
-  asyncCase: asyncCaseSolution,
-  promiseHandling: promiseHandlingSolution,
-  eventHandling: eventHandlingSolution,
-  ES6Features: ES6FeaturesSolution,
-};
-
-const Home = () => {
-  return (
-    <div>
-      <Title title="Home"/>
-      <Nav />
-      <Footer />
-    </div>
-  );
-};
-
-const CodeEditor = () => {
+const CodeBlock = () => {
   const { currType } = useParams();
   
-  const title = typeToTitleMap[currType];
   const type = currType;
-  const initialCode = typeToTextMap[currType];
-  const solution = typeToSolutionMap[currType];
+  const { title, text: initialCode, solution } = typeToInfoMap[type];
 
   const [codeInput, setCodeInput] = useState(initialCode);
   const [caseFlag, setCaseFlag] = useState(false);
   const [highlightedCode, setHighlightedCode] = useState('');
-  
 
   useEffect(() => {
-    socket.on("codeBlockChange", ({ code, title }) => {
-      setCodeInput(code);
+    socket.on('connectionError', ({ error }) => {
+      console.error('Connection Error:', error);  
     });
-    
-  }, []);  
 
-  
+    return () => {
+      socket.off('connectionError');
+    };
+  }, []); 
 
   useEffect(() => {
   
@@ -78,14 +38,17 @@ const CodeEditor = () => {
   }, []);  
 
   useEffect(() => {
-    // Emit saveCodeInput event to the server
+    socket.on("codeBlockChange", ({ code }) => {
+      setCodeInput(code);
+    });
+    
+  }, []);  
+
+
+  useEffect(() => {
     socket.emit('saveCodeInput', { code: codeInput, title: type });
 
-    // Optional: Handle the server's response if needed
-    socket.on('saveCodeInputResponse', (data) => {
-      console.log('Server response:', data);
-    });
-  }, [codeInput, type]);
+  }, [codeInput]);
 
   useEffect(() => {
     const highlighted = hljs.highlightAuto(codeInput).value;
@@ -93,11 +56,19 @@ const CodeEditor = () => {
     setHighlightedCode(highlighted);
   }, [codeInput]);
 
+  useEffect(() => {
+    const shouldDisplaySmileyFace = solution === codeInput;
+    const smileyFaceElement = document.getElementById('smileyFace');
+    if (smileyFaceElement) {
+      smileyFaceElement.style.display = shouldDisplaySmileyFace ? 'block' : 'none';
+    }
+  }, [codeInput]);
+  
   return (
     <div>
       <Nav />
       <h2>{title}</h2>
-      <div id="smileyFace" style={{ display: solution === initialCode ? 'block' : 'none' }}>😊</div>
+      <div id="smileyFace">😊</div>
       {!caseFlag && (
         <pre>
           <code className="styled-code" dangerouslySetInnerHTML={{ __html: highlightedCode }} />
@@ -118,14 +89,13 @@ const CodeEditor = () => {
 };
 
 const App = () => {
-
   return (
     <div>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route
             path= {"/:currType"}
-            element={<CodeEditor />}
+            element={<CodeBlock />}
           />
         </Routes>
     </div>

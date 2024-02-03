@@ -20,11 +20,11 @@ const CodeBlock = mongoose.model('CodeBlock', codeBlockSchema);
 
 const saveEditedCode = async (_id, { body }, res) => {
   try {
-    const { code, title, caseType } = body;
+    const { code, title } = body;
 
     const result = await CodeBlock.findOneAndUpdate(
       { _id },
-      { code, title, caseType },
+      { code, title },
       { upsert: true, new: true }
     );
 

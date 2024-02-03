@@ -1,16 +1,11 @@
 const express = require('express');
-const bodyParser = require('body-parser'); // Import body-parser
-
 const mongoose = require('mongoose');
 const http = require('http');
-const path = require('path');
-const fs = require('fs');
 const socketIO = require('socket.io');
 const codeBlockService = require('./codeBlockService');
-const { Socket } = require('socket.io');
-// var cors = require('cors');
 
-const clientPort = 'https://frontend-coding.onrender.com';
+const clientPort = 'http://localhost:3000';
+//const clientPort = 'https://frontend-coding.onrender.com';
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -20,18 +15,10 @@ const io = require('socket.io')(httpServer, {
   }
 });
 
-// app.use(cors())
-app.use(bodyParser.json());
-// app.use(function(req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Headers", "X-Requested-With");
-//   next();
-//   });
-
-
 const codeBlockChangeStream = codeBlockService.CodeBlock.watch();
-
 const dbURI = "mongodb+srv://itamarbrafman:8ooqF0HXTDpCdJsv@cluster0.xudn2yd.mongodb.net/?retryWrites=true&w=majority";
+
+/*************************************************helper function*************************************************************************/
 
 const caseObject = {
   asyncCase: {
@@ -66,44 +53,49 @@ const CheckWhichCase = (caseType) => {
   return null;
 };
 
-io.on('connection', (socket) => {
-  console.log('a user connected!!!!!!!!!!!!!!1');
+/**************************************************************************************************************************** */
+
+io.on('connection', async (socket) => {
   const url = socket.handshake.query.url;
   const caseType = url.replace(clientPort + '/', '');
   const currentCase = CheckWhichCase(caseType);
 
   if (url !== clientPort + '/') {
-  
+    if (!currentCase) {
+      socket.emit('connectionError', { error: 'Page not found' });
+      socket.disconnect(true);
+      return;
+    }
+
     if (!currentCase.flag) {
       currentCase.flag = true;
       currentCase.mentorId = socket.id;
-    }
-    else{ 
+
+    } else {
+
       socket.emit('STUDENT_EVENT');
 
+      const documentId = codeBlockService[`${caseType}Id`];
+      const existingDocument = await codeBlockService.CodeBlock.findById(documentId);
+      const codeFieldValue = existingDocument.code;
+      socket.emit('codeBlockChange', { code: codeFieldValue });
     }
-  } 
+  }  
+
   socket.on('saveCodeInput', ({ code, title }) => {
     try {
       const currentCase = CheckWhichCase(title);
       const caseType = currentCase.caseType;
       const caseId = codeBlockService[`${caseType}Id`];
 
-      // Call the saveEditedCode function with the received data
-      codeBlockService.saveEditedCode(caseId, { body: { code, title, caseType } }, socket);
+      codeBlockService.saveEditedCode(caseId, { body: { code, title } }, socket);
 
-      // Optional: Emit a response back to the client if needed
-      socket.emit('saveCodeInputResponse', { success: true, message: 'Code saved successfully.' });
+      socket.emit('saveCodeInputResponse');
     } catch (error) {
-      console.error('Error saving code:', error);
-      
-      // Optional: Emit an error response back to the client if needed
-      socket.emit('saveCodeInputResponse', { success: false, error: 'Internal Server Error' });
+      console.error('Error saving code:', error);    
     }
-  });  
-  
+  });    
 });
-
 
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((result) => {
@@ -119,10 +111,7 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
 codeBlockChangeStream.on('change', async (change) => {
     try {
       const result = await codeBlockService.CodeBlock.findById(change.documentKey);
-      if (!result) {
-        return res.status(404).json({ error: 'Document not found' });
-      }
-      
+
       const codeFieldValue = result.code;
       const titleField = result.title;
       const currentCase = CheckWhichCase(titleField);

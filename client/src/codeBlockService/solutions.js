@@ -27,8 +27,7 @@ const asyncCaseSolution = `
   // Calling the asynchronous function
   fetchDataFromAPI();
 
-  Done editing this code!
-`;
+Done editing this code!`;
 
 const ES6FeaturesSolution = `
   // Arrow functions
@@ -49,8 +48,8 @@ const ES6FeaturesSolution = `
   };
   console.log('Sum:', sum(...numbers));
 
-  Done editing this code!
-`;
+Done editing this code!`;
+
 
 const eventHandlingSolution = `
   // Simulating an event listener
@@ -64,8 +63,8 @@ const eventHandlingSolution = `
   const customEvent = new CustomEvent('customEvent', { detail: 'Custom event data' });
   document.dispatchEvent(customEvent);
 
-  Done editing this code!
-`;
+Done editing this code!`;
+
 
 const promiseHandlingSolution = `
   // Simulating a function that returns a promise
@@ -93,8 +92,8 @@ const promiseHandlingSolution = `
       console.error('Promise error:', error.message);
     });
 
-    Done editing this code!
-`;
+Done editing this code!`;
+
 
 export {
   asyncCaseSolution,
