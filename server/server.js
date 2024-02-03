@@ -4,8 +4,7 @@ const http = require('http');
 const socketIO = require('socket.io');
 const codeBlockService = require('./codeBlockService');
 
-const clientPort = 'http://localhost:3000';
-//const clientPort = 'https://frontend-coding.onrender.com';
+const clientPort = 'https://frontend-coding.onrender.com';
 
 const app = express();
 const httpServer = http.createServer(app);
