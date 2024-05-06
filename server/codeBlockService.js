@@ -18,7 +18,7 @@ const ES6FeaturesId = new mongoose.Types.ObjectId();
 
 const CodeBlock = mongoose.model('CodeBlock', codeBlockSchema);
 
-const saveEditedCode = async (_id, { body }, res) => {
+const saveEditedCode = async (_id, { body }, socket) => {
   try {
     const { code, title } = body;
 
@@ -30,7 +30,7 @@ const saveEditedCode = async (_id, { body }, res) => {
 
   } catch (error) {
     console.error('Error saving code:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    socket.emit('connectionError', { error: 'Internal Server Error' });
   }
 };
 

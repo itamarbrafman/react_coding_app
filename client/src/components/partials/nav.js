@@ -1,17 +1,18 @@
 import React from 'react';
+import { StyledNavBar, StyledTitle, StyledNav } from '../style';
 
 const Nav = () => (
-  <div className="title">
-    <h1>Choose code block</h1>
-    <nav>
+  <>
+    <StyledTitle>Choose Code Block</StyledTitle>
+    <StyledNav>
       <ul>
         <li><a href="/promiseHandling">Promise Handling</a></li>
-        <li><a href="/asyncCase">Async case</a></li>
+        <li><a href="/asyncCase">Async Case</a></li>
         <li><a href="/eventHandling">Event Handling</a></li>
         <li><a href="/ES6Features">ES6 Features</a></li>
       </ul>
-    </nav>
-  </div>
+    </StyledNav>
+  </>
 );
 
 export default Nav;

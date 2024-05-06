@@ -3,8 +3,9 @@ const mongoose = require('mongoose');
 const http = require('http');
 const socketIO = require('socket.io');
 const codeBlockService = require('./codeBlockService');
-
-const clientPort = 'https://frontend-coding.onrender.com';
+const CheckWhichCase = require('./checkWhichCase');
+// const clientPort = 'https://frontend-coding.onrender.com';
+const clientPort = 'http://localhost:3000';
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -17,48 +18,13 @@ const io = require('socket.io')(httpServer, {
 const codeBlockChangeStream = codeBlockService.CodeBlock.watch();
 const dbURI = "mongodb+srv://itamarbrafman:8ooqF0HXTDpCdJsv@cluster0.xudn2yd.mongodb.net/?retryWrites=true&w=majority";
 
-/*************************************************helper function*************************************************************************/
-
-const caseObject = {
-  asyncCase: {
-    caseType: 'asyncCase',
-    flag: false,
-    mentorId: null,
-  },
-  promiseHandling: {
-    caseType: 'promiseHandling',
-    flag: false,
-    mentorId: null,
-  },
-  eventHandling: {
-    caseType: 'eventHandling',
-    flag: false,
-    mentorId: null,
-  },
-  ES6Features: {
-    caseType: 'ES6Features',
-    flag: false,
-    mentorId: null,
-  },
-};
-const CheckWhichCase = (caseType) => {
-  for (const key in caseObject) {
-    if (caseObject.hasOwnProperty(key)) {
-      if (caseObject[key].caseType === caseType) {
-        return caseObject[key];
-      }
-    }
-  }
-  return null;
-};
-
-/**************************************************************************************************************************** */
-
 io.on('connection', async (socket) => {
   const url = socket.handshake.query.url;
   const caseType = url.replace(clientPort + '/', '');
   const currentCase = CheckWhichCase(caseType);
-
+  console.log('currentCase', currentCase);
+  console.log('url', url);
+  
   if (url !== clientPort + '/') {
     if (!currentCase) {
       socket.emit('connectionError', { error: 'Page not found' });
